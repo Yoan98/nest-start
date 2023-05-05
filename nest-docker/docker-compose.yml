@@ -1,0 +1,38 @@
+version: '3.4'
+
+services:
+
+  node-nest:
+    container_name: node-nest
+    image: node-nest
+    build:
+      context: .
+      args:
+        - NODE_VERSION=${NODE_VERSION}
+    volumes:
+      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
+    hostname: node-nest
+    ports:
+      - "${HOST_PORT}:${CONTAINER_PORT}"
+    privileged: true
+    restart: always
+    networks:
+      - php-docker_backend
+    ulimits:
+      nofile:
+        soft: 262140
+        hard: 262140
+      core:
+        soft: 262140
+        hard: 262140
+    sysctls:
+      - net.unix.max_dgram_qlen=100
+    command: ${NODE_NEST_DOCKER_COMMAND}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+networks:
+  php-docker_backend:
+    external: true
